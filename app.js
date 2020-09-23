@@ -12,6 +12,7 @@ loadEventListeners();
 // Load all event listeners
 function loadEventListeners() {
   // DOM Load Event
+  document.addEventListener("DOMContentLoaded", getTasks);
 
   // Add task event
   form.addEventListener("submit", addTask);
@@ -24,6 +25,32 @@ function loadEventListeners() {
 
   // Filter tasks
   filter.addEventListener("keyup", filterTasks);
+}
+
+// Get Tasks from Local Storage
+function getTasks() {
+  const storedTasks = localStorage.getItem("tasks");
+  let tasks = storedTasks === null ? [] : JSON.parse(storedTasks); // Making this nicer
+
+  tasks.forEach(function (task) {
+    // Create li element
+    const li = document.createElement("li");
+    // Add class
+    li.className = "collection-item";
+    // Create text node and append to li
+    li.appendChild(document.createTextNode(task));
+    // Create new link element for delete
+    const link = document.createElement("a");
+    // Add class to link
+    link.className = "delete-item secondary-content";
+    // Add icon html
+    link.innerHTML = '<i class="fa fa-remove"></i>';
+    // Append link to li=
+    li.appendChild(link);
+
+    // Append li to ul
+    taskList.appendChild(li);
+  });
 }
 
 // Add Task
@@ -77,11 +104,27 @@ function storeTaskInLocalStorage(task) {
 // Remove Task
 function removeTask(e) {
   if (e.target.parentElement.classList.contains("delete-item")) {
-    if (confirm("Are you sure?")) {
-      e.target.parentElement.parentElement.remove();
-    }
+    e.target.parentElement.parentElement.remove();
+
+    // Remove from Local Storage
+    removeTaskFromLocalStorage(e.target.parentElement.parentElement);
   }
   e.preventDefault();
+}
+
+// Remove Task from Local Storage
+function removeTaskFromLocalStorage(taskItem) {
+  console.log(taskItem);
+  const storedTasks = localStorage.getItem("tasks");
+  let tasks = storedTasks === null ? [] : JSON.parse(storedTasks); // Making this nicer
+
+  tasks.forEach(function (task, index) {
+    if (taskItem.textContent === task) {
+      tasks.splice(index, 1);
+    }
+  });
+
+  localStorage.setItem("tasks", JSON.stringify(tasks));
 }
 
 // Clear Tasks
@@ -94,7 +137,17 @@ function clearTasks(e) {
     taskList.removeChild(taskList.firstChild);
   }
 
+  // Clear from Local Storage
+  clearTasksFromLocalStorage();
+
   e.preventDefault();
+}
+
+// Clear Tasks from Local Storage
+function clearTasksFromLocalStorage() {
+  if (confirm("Are you sure you want to clear all tasks?")) {
+    localStorage.clear();
+  }
 }
 
 // Filter Tasks
