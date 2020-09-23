@@ -30,7 +30,7 @@ function loadEventListeners() {
 // Get Tasks from Local Storage
 function getTasks() {
   const storedTasks = localStorage.getItem("tasks");
-  let tasks = storedTasks === null ? [] : JSON.parse(storedTasks); // Making this nicer
+  let tasks = storedTasks === null ? [] : JSON.parse(storedTasks);
 
   tasks.forEach(function (task) {
     // Create li element
@@ -88,13 +88,8 @@ function addTask(e) {
 
 // Store Task in LS
 function storeTaskInLocalStorage(task) {
-  let tasks;
-
-  if (localStorage.getItem("tasks") === null) {
-    tasks = [];
-  } else {
-    tasks = JSON.parse(localStorage.getItem("tasks"));
-  }
+  const storedTasks = localStorage.getItem("tasks");
+  let tasks = storedTasks === null ? [] : JSON.parse(storedTasks);
 
   tasks.push(task);
 
